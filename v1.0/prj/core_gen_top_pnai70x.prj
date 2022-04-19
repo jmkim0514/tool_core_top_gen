@@ -1,0 +1,53 @@
+{
+    "alp_tools": {
+        "name": "tool_core_top_gen",
+        "format": "prj",
+        "version": "v1.0"
+    },
+
+    "input" : {
+        "tool_core_top" : {
+            "json_file" : "../../tool_core_gen/v1p1/output/test/core_top.json"
+        },
+        "tool_tpag" : {
+            "json_file": "../../tool_tpag/v0p2/output/pnai70x/core_top.json"
+        },
+        "con_info": {
+            "doc": {
+                "cpu_interrupt": {
+                    "excel_file": "./input/pnai70x/PNAI70X_cpu_interrupt_v1.0_2022_0315.xlsx",
+                    "rtl_file": "./output/cpu_interrupt.v"
+                },
+                "core_connection": {
+                    "excel_file": "./input/pnai70x/PNAI70X_core_top_connection_2022_0321.xlsx"
+                },
+                "main_sys": {
+                    "file": ""
+                },
+                "main_tie": {
+                    "file": ""
+                }
+            }
+        },
+        "rtl" : [
+//            {
+//                "instname": "u_cpu_hpdf",
+//                "modname" : "cpu_hpdf",
+//                "file": "./input/core_gen_top_test/cpu_hpdf.v"
+//            },
+            {
+                "instname": "u_peri_hpdf",
+                "modname" : "peri_hpdf",
+                "file": "./input/core_gen_top_test/peri_hpdf.v"
+            }
+//            {
+//                "instname": "u_main_crm",
+//                "modname" : "main_crm",
+//                "file": "./input/core_gen_top_test/main_crm.v"
+//            }
+        ]
+    },
+    "output" : {
+        "file": "./output/pnai70x/core_top.v"
+    }
+}   
