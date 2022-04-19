@@ -414,16 +414,6 @@ if __name__ == "__main__":
                 print('hit p2p')
                 core_top.con_pin_to_pin(src_inst, src_port, d_src['msb'], d_src['lsb'], trg_inst, trg_port, d_trg['msb'], d_trg['lsb'])
 
-                # flag_src = True
-                # core_top.get_port_bit(src_inst, src_port)
-            # print('src true')
-            # else:
-            #     print('src false')
-            #     flag_src = False
-            # if core_top.is_port(trg_inst, trg_port): flag_trg = True
-            # else                                   : flag_trg = False
-            
-            #core_top.con_pin_to_pin(m_inst, m_port, m_msb, m_lsb, s_inst, s_port, s_msb, s_lsb)
         else:
             print('errr')
             exit()
