@@ -20,8 +20,8 @@ import argparse
 import pandas as pd
 from pprint import pprint
 sys.path.append("../../lib/")
-from modport_v0p1 import *
-from alpgen_v0p1 import alpgen, alpgen_json, alpgen_excel
+from modport_v0p2 import *
+from alpgen_v0p2 import alpgen, alpgen_json, alpgen_excel
 from alpgen_util_v0p1 import alpgen_vip
 
 # sys.path.append("./lib")
@@ -29,7 +29,7 @@ from alpgen_util_v0p1 import alpgen_vip
 # from alpgen import alpgen, alpgen_json, alpgen_excel
 # from alpgen_util import alpgen_vip
 
-
+WriteFilePtr = ''
 
 #------------------------------------------------------------------------------
 # Function - @mark
@@ -137,6 +137,7 @@ DISPLAY_TO_CONSOLE = False
 MAX_CPU_IRQ = 512
 
 def fout(i_str):
+    global WriteFilePtr
     if DISPLAY_TO_CONSOLE: print(i_str)
     WriteFilePtr.write(i_str+"\n")
 
@@ -217,6 +218,7 @@ def lint_cpu_irq(list_irq_i):
                 exit()
 
 def gen_cpu_interrupt(excel_file_i, rtl_file_i):
+    global WriteFilePtr
     # load connection doc
     sheet = pd.read_excel(excel_file_i, sheet_name='cpu_interrupt')
     #df = pd.DataFrame(sheet).dropna(axis=0, how='any', subset=['num_soc']).fillna('')
@@ -226,6 +228,8 @@ def gen_cpu_interrupt(excel_file_i, rtl_file_i):
     list_irq = df[['num_cpu', 'num_soc', 'name', 'hpdf_inst', 'hpdf_port', 'ip_inst', 'ip_port']][1:].to_dict('records')
     lint_cpu_irq(list_irq)
 
+    list_connection = []
+
     WriteFilePtr = open(rtl_file_i, 'w')
 
     fout(ModuleStart.format('cpu_interrupt'))
@@ -233,12 +237,20 @@ def gen_cpu_interrupt(excel_file_i, rtl_file_i):
 
     list_port = []
     for di in list_irq:
-        #print(type(di['num_soc']))
         if int(di['num_cpu'])<32:
             continue
         name = di['name'].strip()
+        hpdf_inst = di['hpdf_inst'].strip()
+        hpdf_port = di['hpdf_port'].strip()
         if len(name)>0 and name[:1].isalpha():
             list_port.append(name)
+
+        if len(name)>0 and len(hpdf_inst)>0 and len(hpdf_port)>0:
+            dict_tmp = {}
+            dict_tmp['port'] = name
+            dict_tmp['hpdf_inst'] = hpdf_inst
+            dict_tmp['hpdf_port'] = hpdf_port
+            list_connection.append(dict_tmp)
 
     for n, name in enumerate(list_port):
         if n==(len(list_port)-1): last_comma = ''
@@ -267,9 +279,45 @@ def gen_cpu_interrupt(excel_file_i, rtl_file_i):
     # core_top.add_module(cpu_irq_modname, rtl_file_i, cpu_irq_top.get_port_list())
     # core_top.add_instance(cpu_irq_instname, cpu_irq_modname, 'cpu_interrupt_')
 
-    return True
+    return list_connection
 
+def read_excel(file_excel_i):
+    list_connection = []
+    list_rtl = []
+    sheet = pd.read_excel(file_excel_i, sheet_name='core_connections')
+    df = pd.DataFrame(sheet).dropna(axis=0, how='any', subset=['type']).fillna('')
+    list_con = df[['type', 'src_inst', 'src_port', 'trg_inst', 'trg_port']][1:].to_dict('records')
+    for di in list_con:
+        type = di['type']
+        src_inst = di['src_inst']
+        src_port = di['src_port']
+        trg_inst = di['trg_inst']
+        trg_port = di['trg_port']
 
+        list_connection.append(di)
+
+    sheet = pd.read_excel(file_excel_i, sheet_name='rtl_list')
+    df = pd.DataFrame(sheet).dropna(axis=0, how='any', subset=['instname']).fillna('')
+    list_con = df[['instname', 'modname', 'prefix', 'file']][1:].to_dict('records')
+    for di in list_con:
+        list_rtl.append(di)
+
+    return list_connection, list_rtl
+
+def parse_port(port_i):
+    if port_i.find('[')>0:
+#        print('1 =====')
+        port, bit = port_i.replace(']', '').split('[')
+    else:
+#        print('2 =====')
+        port = port_i
+        bit = 0
+
+    # print(port_i)
+    # print(port)
+    # print(bit)
+    return port, int(bit)
+   
 #------------------------------------------------------------------------------
 # Main - @mark
 #------------------------------------------------------------------------------
@@ -279,28 +327,116 @@ if __name__ == "__main__":
     print ("===============================================")
     dict_prj = get_argument()
 
-    from_core_gen = dict_prj['input']['tool_core_top']['json_file']
-    from_tpag     = dict_prj['input']['tool_tpag']['json_file']
-    cpu_irq_excel_file   = dict_prj['input']['con_info']['doc']['cpu_interrupt']['excel_file']
-    cpu_irq_rtl_file = dict_prj['input']['con_info']['doc']['cpu_interrupt']['rtl_file']
-    doc_main_sys  = dict_prj['input']['con_info']['doc']['main_sys']['file']
-    doc_main_tie  = dict_prj['input']['con_info']['doc']['main_tie']['file']
-    core_con_excel_file = dict_prj['input']['con_info']['doc']['core_connection']['excel_file']
-#    list_connect  = dict_prj['input']['con_info']['connections']
-    list_rtl      = dict_prj['input']['rtl']
+    IN_CORE_TOP = dict_prj['input']['core_top']
+#    IN_RTL_LIST = dict_prj['input']['rtl']
+    
+    IN_CPU_IRQ_EXCEL = dict_prj['cpu_interrupt']['input_excel']
+    OUT_CPU_IRQ_RTL = dict_prj['cpu_interrupt']['output_rtl']
 
-    output_rtl    = dict_prj['output']['file']
+    OUT_CORE_TOP = dict_prj['output']['core_top']
+    CONNECTION_EXCEL = dict_prj['connection']
 
 
-    RTL_CORE_TOP = dict_prj['input']['core_top']
-    RTL_CPU_IRQ = dict_prj['input']['cpu_interrupt']
+    #--------------------------------------------------------------------------
+    # load connections - core_connection
+    #--------------------------------------------------------------------------
+    connections, rtl_list = read_excel(CONNECTION_EXCEL)
 
-    gen_cpu_interrupt(cpu_irq_excel_file, RTL_CPU_IRQ)
+
+        # elif di['type']=='p2p':
+        #     flag_src, d_src = core_top.get_port_info(src_inst, src_port)
+        #     flag_trg, d_trg = core_top.get_port_info(trg_inst, trg_port)
+        #     if flag_src and flag_trg:
+        #         flag_con = True
+        #         if d_src['msb']!=d_trg['msb']:
+        #             flag_con = False
+        #         if d_src['lsb']!=d_trg['lsb']:
+        #             flag_con = False
+        #         if d_src['dir']==d_trg['dir']:
+        #             flag_con = False
+        #     else:
+        #         flag_con = False
+
+        #     if flag_con:
+        #         print('hit p2p')
+        #         core_top.con_pin_to_pin(src_inst, src_port, d_src['msb'], d_src['lsb'], trg_inst, trg_port, d_trg['msb'], d_trg['lsb'])
+
+        # else:
+        #     print('errr')
+        #     exit()
 
 
-    core_top = alpgen(RTL_CORE_TOP)
-    cpu_irq  = alpgen(RTL_CORE_IRQ)
 
+
+    # generate cpu_interrupt.v
+    check_dir(OUT_CPU_IRQ_RTL)
+    connections_irq = gen_cpu_interrupt(IN_CPU_IRQ_EXCEL, OUT_CPU_IRQ_RTL)
+
+    # alpgen object
+    core_top = alpgen(IN_CORE_TOP)
+    cpu_irq  = alpgen(OUT_CPU_IRQ_RTL)
+
+    # add cpu_interrupt
+    modname = 'cpu_interrupt'
+    instname = 'u_'+modname
+    prefix = 'irq_'
+    ports = cpu_irq.get_port_list()
+
+    core_top.add_instance(instname, modname, prefix)
+    core_top.add_module(modname, modname+'.v', ports)
+
+    # add RTL_LIST
+    for di in rtl_list:
+        instname = di['instname']
+        modname = di['modname']
+        prefix = di['prefix']
+        filepath = di['file']
+
+        obj = modport(filepath, [], {}, 0)
+        ports = obj.get_port_list()
+
+        core_top.add_instance(instname, modname, prefix)
+        core_top.add_module(modname, filepath, ports)
+
+
+    # peri_hpdf  = alpgen(RTL_PERI_HPDF)
+
+    # core_top.add_module(cpu_irq.get_module())
+    # core_top.add_module(cpu_irq.get_peri_hpdf())
+
+
+
+# #    print(core_top.JSON['instance'])
+
+# #    print(core_top.JSON['connection'])
+#     core_top.con_pattern('u_peri_hpdf', '$$', '', '$$')
+    #--------------------------------------------------------------------------
+    # Connection
+    #--------------------------------------------------------------------------
+
+    # {port:, hpdf_inst:, hpdf_port:,}
+    for di in connections_irq:
+        irq_port = 'i_'+di['port'].lower()
+        trg_inst = di['hpdf_inst']
+        trg_port, lsb = parse_port(di['hpdf_port'])
+        if core_top.is_port(trg_inst, trg_port):
+            core_top.con_pin_to_pin('u_cpu_interrupt', irq_port, 0, 0, trg_inst, trg_port, lsb, lsb)
+        else:
+            core_top.con_pin_value('u_cpu_interrupt', irq_port, 0, 0, 0)
+
+    # {type:, src_inst:, src_port:, trg_inst:, trg_port}
+    for di in connections:
+        if di['type']=='pattern':
+            core_top.con_pattern(di['src_inst'], di['src_port'], di['trg_inst'], di['trg_port'])
+#    pprint(connections_irq)
+
+
+    # todo - check
+    core_top.JSON['top']['modname'] = 'core_top'
+
+    core_top.write_rtl(OUT_CORE_TOP)
+
+    exit()
 
 
 
@@ -384,49 +520,7 @@ if __name__ == "__main__":
 
 
 
-    #--------------------------------------------------------------------------
-    # load connections - core_connection
-    #--------------------------------------------------------------------------
-    sheet = pd.read_excel(core_con_excel_file, sheet_name='core_connections')
-    df = pd.DataFrame(sheet).fillna('')
-    list_con = df[['type', 'src_inst', 'src_port', 'trg_inst', 'trg_port']][2:].to_dict('records')
-    for di in list_con:
-        type = di['type']
-        src_inst = di['src_inst']
-        src_port = di['src_port']
-        trg_inst = di['trg_inst']
-        trg_port = di['trg_port']
 
-
-        if di['type']=='pattern':
-            #con = {'type':di['type'], 'mst':{'inst':di['src_inst'], 'symbol':di['src_port']}, 'slv':{'inst':di['trg_inst'], 'symbol':di['trg_port']}}
-            core_top.con_pattern(src_inst, src_port, trg_inst, trg_port)
-        elif di['type']=='p2p':
-            flag_src, d_src = core_top.get_port_info(src_inst, src_port)
-            flag_trg, d_trg = core_top.get_port_info(trg_inst, trg_port)
-            # print('-----')
-            # print(flag_src)
-            # print(d_src)
-            # print(flag_trg)
-            # print(d_trg)
-            if flag_src and flag_trg:
-                flag_con = True
-                if d_src['msb']!=d_trg['msb']:
-                    flag_con = False
-                if d_src['lsb']!=d_trg['lsb']:
-                    flag_con = False
-                if d_src['dir']==d_trg['dir']:
-                    flag_con = False
-            else:
-                flag_con = False
-
-            if flag_con:
-                print('hit p2p')
-                core_top.con_pin_to_pin(src_inst, src_port, d_src['msb'], d_src['lsb'], trg_inst, trg_port, d_trg['msb'], d_trg['lsb'])
-
-        else:
-            print('errr')
-            exit()
         
         #core_top.JSON['connection'].append(con)
 
@@ -440,3 +534,4 @@ if __name__ == "__main__":
     check_dir(output_rtl)
     core_top_gen = alpgen(core_top.get_json())
     core_top_gen.write_rtl(output_rtl)
+OUT_CORE_TOP
