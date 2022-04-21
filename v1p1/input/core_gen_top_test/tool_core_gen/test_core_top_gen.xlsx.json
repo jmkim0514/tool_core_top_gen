@@ -1,0 +1,763 @@
+{
+	"top": {
+		"modname": "test_core_top_gen",
+		"ports": []
+	},
+	"module": {
+		"main_crm": {
+			"modname": "main_crm",
+			"filename": "input/test_core_top_gen/main_crm.v",
+			"ports": [
+				{
+					"port": "i_xtal",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_reset",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_cpu_aclk",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_cpu_areset",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_cpu_pclk",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_cpu_preset",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_aclk",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_areset",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_pclk",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_preset",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				}
+			],
+			"symbol_info": {}
+		},
+		"cpu_hpdf": {
+			"modname": "cpu_hpdf",
+			"filename": "input/test_core_top_gen/cpu_hpdf.v",
+			"ports": [
+				{
+					"port": "i_aclk",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_aresetn",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_awid",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_awaddr",
+					"dir": "output",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "o_awlen",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_awsize",
+					"dir": "output",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "o_awburst",
+					"dir": "output",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "o_awlock",
+					"dir": "output",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "o_awcache",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_awprot",
+					"dir": "output",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "o_awvalid",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_awready",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_wid",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_wdata",
+					"dir": "output",
+					"msb": 127,
+					"lsb": 0
+				},
+				{
+					"port": "o_wstrb",
+					"dir": "output",
+					"msb": 15,
+					"lsb": 0
+				},
+				{
+					"port": "o_wlast",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_wvalid",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_wready",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_bid",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_bresp",
+					"dir": "input",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "i_bvalid",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_bready",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_arid",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_araddr",
+					"dir": "output",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "o_arlen",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_arsize",
+					"dir": "output",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "o_arburst",
+					"dir": "output",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "o_arlock",
+					"dir": "output",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "o_arcache",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_arprot",
+					"dir": "output",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "o_arvalid",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_arready",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_rid",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_rdata",
+					"dir": "input",
+					"msb": 127,
+					"lsb": 0
+				},
+				{
+					"port": "i_rresp",
+					"dir": "input",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "i_rlast",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_rvalid",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_rready",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_pclk",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_presetn",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_psel",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_penable",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_paddr",
+					"dir": "input",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "i_pwrite",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_pwdata",
+					"dir": "input",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "i_pprot",
+					"dir": "input",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "i_pstrb",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_prdata",
+					"dir": "output",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "o_pready",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_pslverr",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				}
+			],
+			"symbol_info": {
+				"axi$.$": {
+					"protocol": "axi",
+					"portdir": "pre",
+					"type": "mst",
+					"prefix": "",
+					"postfix": "",
+					"option": "",
+					"parameter": {
+						"ID_WIDTH": 4,
+						"ADDR_WIDTH": 32,
+						"LEN_WIDTH": 4,
+						"DATA_WIDTH": 128,
+						"BYTE_WIDTH": 16
+					}
+				},
+				"apb$.$": {
+					"protocol": "apb",
+					"portdir": "pre",
+					"type": "slv",
+					"prefix": "",
+					"postfix": "",
+					"option": "",
+					"parameter": {
+						"ADDR_WIDTH": 32,
+						"DATA_WIDTH": 32
+					}
+				}
+			}
+		},
+		"peri_hpdf": {
+			"modname": "peri_hpdf",
+			"filename": "input/test_core_top_gen/peri_hpdf.v",
+			"ports": [
+				{
+					"port": "i_aclk",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_aresetn",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_awid",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_awaddr",
+					"dir": "input",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_awlen",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_awsize",
+					"dir": "input",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_awburst",
+					"dir": "input",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_awlock",
+					"dir": "input",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_awcache",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_awprot",
+					"dir": "input",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_awvalid",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_awready",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_wid",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_wdata",
+					"dir": "input",
+					"msb": 127,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_wstrb",
+					"dir": "input",
+					"msb": 15,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_wlast",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_wvalid",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_wready",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_bid",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_bresp",
+					"dir": "output",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_bvalid",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_bready",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_arid",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_araddr",
+					"dir": "input",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_arlen",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_arsize",
+					"dir": "input",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_arburst",
+					"dir": "input",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_arlock",
+					"dir": "input",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_arcache",
+					"dir": "input",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_arprot",
+					"dir": "input",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_arvalid",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_arready",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_rid",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_rdata",
+					"dir": "output",
+					"msb": 127,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_rresp",
+					"dir": "output",
+					"msb": 1,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_rlast",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_peri_rvalid",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_peri_rready",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_pclk",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_presetn",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_psel",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_penable",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_paddr",
+					"dir": "output",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "o_pwrite",
+					"dir": "output",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "o_pwdata",
+					"dir": "output",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "o_pprot",
+					"dir": "output",
+					"msb": 2,
+					"lsb": 0
+				},
+				{
+					"port": "o_pstrb",
+					"dir": "output",
+					"msb": 3,
+					"lsb": 0
+				},
+				{
+					"port": "i_prdata",
+					"dir": "input",
+					"msb": 31,
+					"lsb": 0
+				},
+				{
+					"port": "i_pready",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				},
+				{
+					"port": "i_pslverr",
+					"dir": "input",
+					"msb": 0,
+					"lsb": 0
+				}
+			],
+			"symbol_info": {
+				"axi$.peri_$": {
+					"protocol": "axi",
+					"portdir": "pre",
+					"type": "slv",
+					"prefix": "peri_",
+					"postfix": "",
+					"option": "",
+					"parameter": {
+						"ID_WIDTH": 4,
+						"ADDR_WIDTH": 32,
+						"LEN_WIDTH": 4,
+						"DATA_WIDTH": 128,
+						"BYTE_WIDTH": 16
+					}
+				},
+				"apb$.$": {
+					"protocol": "apb",
+					"portdir": "pre",
+					"type": "mst",
+					"prefix": "",
+					"postfix": "",
+					"option": "",
+					"parameter": {
+						"ADDR_WIDTH": 32,
+						"DATA_WIDTH": 32
+					}
+				}
+			}
+		}
+	},
+	"instance": {
+		"u_main_crm": {
+			"modname": "main_crm",
+			"prefix": "crm_",
+			"parameter": {}
+		},
+		"u_cpu_hpdf": {
+			"modname": "cpu_hpdf",
+			"prefix": "cpu_",
+			"parameter": {}
+		},
+		"u_peri_hpdf": {
+			"modname": "peri_hpdf",
+			"prefix": "peri_",
+			"parameter": {}
+		}
+	},
+	"connection": []
+}
