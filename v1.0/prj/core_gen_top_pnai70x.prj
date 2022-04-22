@@ -15,7 +15,7 @@
         "con_info": {
             "doc": {
                 "cpu_interrupt": {
-                    "excel_file": "./input/pnai70x/PNAI70X_cpu_interrupt_v1.0_2022_0315.xlsx",
+                    "excel_file": "./input/pnai70x/PNAI70X_cpu_interrupt_2022_0414.xlsx",
                     "rtl_file": "./output/cpu_interrupt.v"
                 },
                 "core_connection": {
@@ -38,7 +38,7 @@
             {
                 "instname": "u_peri_hpdf",
                 "modname" : "peri_hpdf",
-                "file": "./input/core_gen_top_test/peri_hpdf.v"
+                "file": "./input/pnai70x/peri_hpdf.v"
             }
 //            {
 //                "instname": "u_main_crm",
