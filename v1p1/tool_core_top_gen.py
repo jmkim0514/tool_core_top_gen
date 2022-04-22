@@ -394,7 +394,6 @@ if __name__ == "__main__":
 
         obj = modport(filepath, [], {}, 0)
         ports = obj.get_port_list()
-
         core_top.add_instance(instname, modname, prefix)
         core_top.add_module(modname, filepath, ports)
 
@@ -428,6 +427,11 @@ if __name__ == "__main__":
     for di in connections:
         if di['type']=='pattern':
             core_top.con_pattern(di['src_inst'], di['src_port'], di['trg_inst'], di['trg_port'])
+        elif di['type']=='p2t':
+            m_inst = ''
+            m_port = di['trg_port']
+            core_top.con_pin_value(m_inst, m_port, 299, 0, 0)
+
 #    pprint(connections_irq)
 
 
