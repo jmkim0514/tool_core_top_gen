@@ -21,8 +21,8 @@ import pandas as pd
 from pprint import pprint
 sys.path.append("../../lib/")
 from modport_v0p2 import *
-from alpgen_v0p2 import alpgen, alpgen_json, alpgen_excel
-from alpgen_util_v0p1 import alpgen_vip
+from alpgen_v0p3 import alpgen, alpgen_json, alpgen_excel
+#from alpgen_util_v0p1 import alpgen_vip
 
 # sys.path.append("./lib")
 # from modport_r0p04_ing import *
@@ -62,54 +62,6 @@ def check_dir(file_path_i):
     if not os.path.isdir(file_path):
         os.makedirs(file_path)
 
-
-# # Read HPDF Top
-# #  dic_modports = {mod_name : ports[dic_port0, dic_port1, . . . ]}
-# dic_modports = {}
-
-# for mod_name in JSON_CC['core_update']['module']:
-#     path = JSON_CC['core_update']['module'][mod_name]['filepath']
-#     #print (mod_name)
-#     #print (path)
-#     # Read HPDF Top
-#     new_top = modport(path, [], {}, 0)
-#     list_ports = []
-#     for ps in new_top.port_info_set:
-#         for pi in ps:
-#             dic_port = {}
-#             dic_port['port'] = pi.name
-#             dic_port['dir']  = pi.dir
-#             dic_port['msb'] = pi.msb
-#             dic_port['lsb'] = pi.lsb
-#             list_ports.append(dic_port)
-#     dic_modports[mod_name] = list_ports   
-
-# # add top
-# json_base.append_top_port(json_top.JSON['top']['ports'])
-
-# # add instance
-# for inst_name, dic_inst in JSON_CC['core_update']['instance'].items():
-#     #print (inst_name)
-#     #print (inst_dic)
-#     json_base.add_instance (inst_name, dic_inst)
-
-# # add module
-# for mod_name, dic_mod in JSON_CC['core_update']['module'].items():
-#     print (mod_name)
-#     print (dic_mod)
-#     dic_mod['ports'] = dic_modports[mod_name]
-#     json_base.add_module(mod_name, dic_mod['filepath'], dic_modports[mod_name])
-
-# # add connection
-# for dic_con in JSON_CC['core_update']['connection']:
-#     json_base.add_connection (dic_con)
-
-
-# json_base.write_rtl('./test.v')
-
-# def check_file(prj_i):
-#     if not os.path.isdir(file_path):
-#             os.makedirs(file_path)    
 
 def cnv_port_list_to_dict(list_port_i):
     result = {}
@@ -273,12 +225,6 @@ def gen_cpu_interrupt(excel_file_i, rtl_file_i):
     fout(ModuleEnd)
     WriteFilePtr.close()    
     
-    # cpu_irq_top = modport(rtl_file_i, [], {}, 0)
-    # cpu_irq_modname = 'cpu_interrupt'
-    # cpu_irq_instname = 'u_'+cpu_irq_modname
-    # core_top.add_module(cpu_irq_modname, rtl_file_i, cpu_irq_top.get_port_list())
-    # core_top.add_instance(cpu_irq_instname, cpu_irq_modname, 'cpu_interrupt_')
-
     return list_connection
 
 def read_excel(file_excel_i):
@@ -286,13 +232,13 @@ def read_excel(file_excel_i):
     list_rtl = []
     sheet = pd.read_excel(file_excel_i, sheet_name='core_connections')
     df = pd.DataFrame(sheet).dropna(axis=0, how='any', subset=['type']).fillna('')
-    list_con = df[['type', 'src_inst', 'src_port', 'trg_inst', 'trg_port']][1:].to_dict('records')
+    list_con = df[['type', 'mst_inst', 'mst_port', 'slv_inst', 'slv_port']][1:].to_dict('records')
     for di in list_con:
-        type = di['type']
-        src_inst = di['src_inst']
-        src_port = di['src_port']
-        trg_inst = di['trg_inst']
-        trg_port = di['trg_port']
+        if type(di['type']    )==str: di['type'] = di['type'].strip()
+        if type(di['mst_inst'])==str: di['mst_inst'] = di['mst_inst'].strip()
+        if type(di['mst_port'])==str: di['mst_port'] = di['mst_port'].strip()
+        if type(di['slv_inst'])==str: di['slv_inst'] = di['slv_inst'].strip()
+        if type(di['slv_port'])==str: di['slv_port'] = di['slv_port'].strip()
 
         list_connection.append(di)
 
@@ -304,20 +250,54 @@ def read_excel(file_excel_i):
 
     return list_connection, list_rtl
 
-def parse_port(port_i):
+def split_irq_port(port_i):
+    """split port and bit
+    Args:
+        port_i (str): port name (e.g., irq[4])
+    Returns:
+        (list): (e.g., irq, 4)
+    """
     if port_i.find('[')>0:
-#        print('1 =====')
         port, bit = port_i.replace(']', '').split('[')
     else:
-#        print('2 =====')
         port = port_i
         bit = 0
 
-    # print(port_i)
-    # print(port)
-    # print(bit)
-    return port, int(bit)
-   
+    return port.strip(), int(bit)
+
+def get_port_info(obj_i, inst_i, port_i):
+    """get port info
+    Args:
+        obj_i (object) : alpgen object
+        inst_i (str) : instance name
+        port_i (str) : port name
+    Returns:
+        (dict): {inst: inst_name, port: port_name, msb:0, lsb:0}
+    """
+    if port_i.find('[')>0:
+        s = port_i.find('[')
+        e = port_i.find(']')
+        m = port_i.find(':')
+        if m>0:
+            msb, lsb = port_i[s+1:e].split(':')
+            msb = int(msb.strip())
+            lsb = int(lsb.strip())
+        else:
+            msb = int(port_i[s+1:e].strip())
+            lsb = msb
+
+        port = port_i[:s].strip()
+
+        return {'inst': inst_i, 'port':port, 'msb': msb, 'lsb': lsb}
+    else:
+        flag, dict_port = obj_i.get_port_info(inst_i, port_i)
+        if flag:
+            msb = dict_port['msb']
+            lsb = dict_port['lsb']
+            return {'inst': inst_i, 'port': port_i, 'msb': msb, 'lsb': lsb}
+        else:
+            return None
+
 #------------------------------------------------------------------------------
 # Main - @mark
 #------------------------------------------------------------------------------
@@ -342,28 +322,6 @@ if __name__ == "__main__":
     #--------------------------------------------------------------------------
     connections, rtl_list = read_excel(CONNECTION_EXCEL)
 
-
-        # elif di['type']=='p2p':
-        #     flag_src, d_src = core_top.get_port_info(src_inst, src_port)
-        #     flag_trg, d_trg = core_top.get_port_info(trg_inst, trg_port)
-        #     if flag_src and flag_trg:
-        #         flag_con = True
-        #         if d_src['msb']!=d_trg['msb']:
-        #             flag_con = False
-        #         if d_src['lsb']!=d_trg['lsb']:
-        #             flag_con = False
-        #         if d_src['dir']==d_trg['dir']:
-        #             flag_con = False
-        #     else:
-        #         flag_con = False
-
-        #     if flag_con:
-        #         print('hit p2p')
-        #         core_top.con_pin_to_pin(src_inst, src_port, d_src['msb'], d_src['lsb'], trg_inst, trg_port, d_trg['msb'], d_trg['lsb'])
-
-        # else:
-        #     print('errr')
-        #     exit()
 
 
 
@@ -397,18 +355,6 @@ if __name__ == "__main__":
         core_top.add_instance(instname, modname, prefix)
         core_top.add_module(modname, filepath, ports)
 
-
-    # peri_hpdf  = alpgen(RTL_PERI_HPDF)
-
-    # core_top.add_module(cpu_irq.get_module())
-    # core_top.add_module(cpu_irq.get_peri_hpdf())
-
-
-
-# #    print(core_top.JSON['instance'])
-
-# #    print(core_top.JSON['connection'])
-#     core_top.con_pattern('u_peri_hpdf', '$$', '', '$$')
     #--------------------------------------------------------------------------
     # Connection
     #--------------------------------------------------------------------------
@@ -416,126 +362,43 @@ if __name__ == "__main__":
     # {port:, hpdf_inst:, hpdf_port:,}
     for di in connections_irq:
         irq_port = 'i_'+di['port'].lower()
-        trg_inst = di['hpdf_inst']
-        trg_port, lsb = parse_port(di['hpdf_port'])
-        if core_top.is_port(trg_inst, trg_port):
-            core_top.con_pin_to_pin('u_cpu_interrupt', irq_port, 0, 0, trg_inst, trg_port, lsb, lsb)
+        slv_inst = di['hpdf_inst']
+        slv_port, lsb = split_irq_port(di['hpdf_port'])
+        if core_top.is_port(slv_inst, slv_port):
+            core_top.con_pin_to_pin('u_cpu_interrupt', irq_port, 0, 0, slv_inst, slv_port, lsb, lsb)
         else:
             core_top.con_pin_value('u_cpu_interrupt', irq_port, 0, 0, 0)
 
-    # {type:, src_inst:, src_port:, trg_inst:, trg_port}
+    # {type:, mst_inst:, mst_port:, slv_inst:, slv_port}
     for di in connections:
+        mst_inst = di['mst_inst']
+        mst_port = di['mst_port']
+        slv_inst = di['slv_inst']
+        slv_port = di['slv_port']
+
         if di['type']=='pattern':
-            core_top.con_pattern(di['src_inst'], di['src_port'], di['trg_inst'], di['trg_port'])
+            core_top.con_pattern(di['mst_inst'], di['mst_port'], di['slv_inst'], di['slv_port'])
         elif di['type']=='p2t':
-            m_inst = ''
-            m_port = di['trg_port']
-            core_top.con_pin_value(m_inst, m_port, 299, 0, 0)
-
-#    pprint(connections_irq)
-
-
-    # todo - check
-    core_top.JSON['top']['modname'] = 'core_top'
-
-    core_top.write_rtl(OUT_CORE_TOP)
-
-    exit()
-
-
-
-
-
-    #--------------------------------------------------------------------------
-    # read core_top from tool_core_gen
-    #--------------------------------------------------------------------------
-    core_top = alpgen_json(from_core_gen)
-    #--------------------------------------------------------------------------
-    # read pad from tool_tpag
-    #--------------------------------------------------------------------------
-    pad_top = alpgen_json(from_tpag)
-    core_top.append_top_port(pad_top.JSON['top']['ports'])
-
-    #--------------------------------------------------------------------------
-    # load rtl from prj
-    #--------------------------------------------------------------------------
-    for di in list_rtl:
-        new_file = di['file']
-        new_instname = di['instname']
-        new_modname = di['modname']
-        new_top = modport(new_file, [], {}, 0)
-        # get port list
-        port_list_old = core_top.get_port_list(new_instname)
-        port_list_new = new_top.get_port_list()
-        #print('{0} ======== '.format(new_instname))
-
-        # update old rtl
-        if core_top.is_instance(new_instname, new_modname):
-            # print(port_list_old)
-            if check_port_a_to_b(port_list_old, port_list_new):
-                #core_top.JSON['module'][new_modname]['ports'] = port_list_new
-                core_top.add_module(new_modname, new_file, port_list_new)
-            else:
-                print('ERROR')
+            core_top.con_pin_value(mst_inst, mst_port, 299, 0, 0)
+        elif di['type']=='p2p':
+            mst_info = get_port_info(core_top, mst_inst, mst_port)
+            slv_info = get_port_info(core_top, slv_inst, slv_port)
+            core_top.con_pin_to_pin(mst_info['inst'], mst_info['port'], mst_info['msb'], mst_info['lsb'], \
+                                    slv_info['inst'], slv_info['port'], slv_info['msb'], slv_info['lsb'])
+        elif di['type']=='tie':
+            if slv_inst:
+                print('[LOG] In type==tie mode, "slave instance" must be empty in {0}'.format(CONNECTION_EXCEL))
+                print('[LOG] - slave instance = {0}'.format(di['slv_inst']))
                 exit()
-        # add new rtl
-        else:
-            new_prefix = di['prefix']
-            new_param = di['parameter']
-            core_top.add_instance(new_instname, new_modname, new_prefix, new_param)
-            core_top.add_module(new_modname, new_file, port_list_new)
 
-    #--------------------------------------------------------------------------
-    # load connections - cpu_interrupt
-    #--------------------------------------------------------------------------
+            mst_info = get_port_info(core_top, mst_inst, mst_port)
+            if mst_info==None:
+                print('[LOG] Error-1234, can not find port name')
+                print('[LOG] - instance name = ', mst_inst)
+                print('[LOG] - port name = ', mst_port)
+                exit()
+            else:
+                core_top.con_pin_value(mst_info['inst'], mst_info['port'], mst_info['msb'], mst_info['lsb'], slv_port)
 
-
-    #--------------------------------------------------------------------------
-    # load connections - cpu_irq
-    #--------------------------------------------------------------------------
-    cpu_inst = 'u_cpu_hpdf'
-    for di in list_irq:
-        # print(di)
-        # exit()
-        src_inst = 'u_cpu_interrupt'
-        src_port = 'i_'+di['name'].lower()
-        trg_inst = di['hpdf_inst']
-        trg_port = di['hpdf_port']
-        flag_trg, d_trg = core_top.get_port_info(trg_inst, trg_port)
-        # print('-----')
-        # print(flag_src)
-        # print(d_src)
-        # print(flag_trg)
-        # print(d_trg)
-        if flag_trg:
-            flag_con = True
-            if 0!=d_trg['msb']:
-                flag_con = False
-            if 0!=d_trg['lsb']:
-                flag_con = False
-            if 'output'!=d_trg['dir']:
-                flag_con = False
-        else:
-            flag_con = False
-
-        if flag_con:
-            core_top.con_pin_to_pin(src_inst, src_port, 0, 0, trg_inst, trg_port, 0, 0)
-            #core_top.con_pin_to_pin(trg_inst, trg_port, 0, 0, src_inst, src_port, 0, 0)
-
-
-
-
-        
-        #core_top.JSON['connection'].append(con)
-
-
-
-    # pprint(list_con)
-    # exit()
-
-
-    # Write RTL
-    check_dir(output_rtl)
-    core_top_gen = alpgen(core_top.get_json())
-    core_top_gen.write_rtl(output_rtl)
-OUT_CORE_TOP
+    core_top.JSON['top']['modname'] = 'core_top'
+    core_top.write_rtl(OUT_CORE_TOP)

@@ -26,7 +26,7 @@ module vwrap_arm_cortexa7_triple_dsm
 
 );
 
-    //parameter IW = 6;
+    parameter IW = 6;
     wire         #(0.1) arreadym;
     wire         #(0.1) arvalidm;
     wire [39:0]  #(0.1) araddrm;
