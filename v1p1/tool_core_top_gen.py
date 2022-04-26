@@ -355,6 +355,10 @@ if __name__ == "__main__":
         core_top.add_instance(instname, modname, prefix)
         core_top.add_module(modname, filepath, ports)
 
+    core_top.platform_designer()
+    core_top.set_bus_group()
+
+
     #--------------------------------------------------------------------------
     # Connection
     #--------------------------------------------------------------------------
@@ -399,6 +403,15 @@ if __name__ == "__main__":
                 exit()
             else:
                 core_top.con_pin_value(mst_info['inst'], mst_info['port'], mst_info['msb'], mst_info['lsb'], slv_port)
+
+        elif di['type']=='alp_vip':
+            
+            #                   (bus_inst, bus_sym , vip_inst, clk_inst, clk_port, rst_inst, rst_port, pre_i=None):
+            core_top.con_alp_vip(mst_inst, mst_port, slv_inst, None, None, None, None, None)
+        elif di['type']=='bus_group':
+            #                      mst_inst, mst_symbol,  slv_inst, slv_symbol
+            core_top.con_bus_group(mst_inst, mst_port  ,  slv_inst, slv_port  )
+
 
     core_top.JSON['top']['modname'] = 'core_top'
     core_top.write_rtl(OUT_CORE_TOP)
