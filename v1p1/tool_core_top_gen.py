@@ -234,17 +234,16 @@ def read_excel(file_excel_i):
     df = pd.DataFrame(sheet).dropna(axis=0, how='any', subset=['type']).fillna('')
     list_con = df[['type', 'mst_inst', 'mst_port', 'slv_inst', 'slv_port']][1:].to_dict('records')
     for di in list_con:
-        if type(di['type']    )==str: di['type'] = di['type'].strip()
-        if type(di['mst_inst'])==str: di['mst_inst'] = di['mst_inst'].strip()
-        if type(di['mst_port'])==str: di['mst_port'] = di['mst_port'].strip()
-        if type(di['slv_inst'])==str: di['slv_inst'] = di['slv_inst'].strip()
-        if type(di['slv_port'])==str: di['slv_port'] = di['slv_port'].strip()
-
+        if type(di['type']     )==str: di['type']      = di['type'].strip()
+        if type(di['mst_inst'] )==str: di['mst_inst']  = di['mst_inst'].strip()
+        if type(di['mst_port'] )==str: di['mst_port']  = di['mst_port'].strip()
+        if type(di['slv_inst'] )==str: di['slv_inst']  = di['slv_inst'].strip()
+        if type(di['slv_port'] )==str: di['slv_port']  = di['slv_port'].strip()
         list_connection.append(di)
 
     sheet = pd.read_excel(file_excel_i, sheet_name='rtl_list')
     df = pd.DataFrame(sheet).dropna(axis=0, how='any', subset=['instname']).fillna('')
-    list_con = df[['instname', 'modname', 'prefix', 'file']][1:].to_dict('records')
+    list_con = df[['instname', 'modname', 'prefix', 'file', 'parameter']][1:].to_dict('records')
     for di in list_con:
         list_rtl.append(di)
 
@@ -316,15 +315,10 @@ if __name__ == "__main__":
     OUT_CORE_TOP = dict_prj['output']['core_top']
     CONNECTION_EXCEL = dict_prj['connection']
 
-
     #--------------------------------------------------------------------------
     # load connections - core_connection
     #--------------------------------------------------------------------------
     connections, rtl_list = read_excel(CONNECTION_EXCEL)
-
-
-
-
 
     # generate cpu_interrupt.v
     check_dir(OUT_CPU_IRQ_RTL)
@@ -349,10 +343,18 @@ if __name__ == "__main__":
         modname = di['modname']
         prefix = di['prefix']
         filepath = di['file']
+        parameter = di['parameter'].strip()
+        if len(parameter)>0:
+            try:
+                param = eval(parameter)
+            except:
+                assert(0), '[ERROR] parameter do not supported = '+parameter
+        else:
+            param = {}
 
-        obj = modport(filepath, [], {}, 0)
+        obj = modport(filepath, [], param, 0)
         ports = obj.get_port_list()
-        core_top.add_instance(instname, modname, prefix)
+        core_top.add_instance(instname, modname, prefix, param)
         core_top.add_module(modname, filepath, ports)
 
     core_top.platform_designer()
