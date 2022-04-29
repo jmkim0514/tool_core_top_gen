@@ -346,6 +346,8 @@ if __name__ == "__main__":
         parameter = di['parameter'].strip()
         if len(parameter)>0:
             try:
+                parameter = parameter.replace(chr(8220), '"')   # for ooffice
+                parameter = parameter.replace(chr(8221), '"')   # for ooffice
                 param = eval(parameter)
             except:
                 assert(0), '[ERROR] parameter do not supported = '+parameter
