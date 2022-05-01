@@ -297,6 +297,37 @@ def get_port_info(obj_i, inst_i, port_i):
         else:
             return None
 
+def _strip(data_i):
+    data = data_i.strip()
+    if data[:1] in ['"', '"']:
+        data = data[1:]
+    if data[-1:] in ['"', '"']:
+        data = data[:-1]
+    return data
+
+def get_param(param_i):
+    """make dict for parameter
+    Returns:
+        (dict): {key:value, ...}
+    """
+    param = param_i.replace(' ', '')
+    param = param.replace('{', '')
+    param = param.replace('}', '')
+    param = param.replace(chr(8220), '')   # for ooffice
+    param = param.replace(chr(8221), '')   # for ooffice
+    print(param)
+    result = {}
+    for i in param.split(','):
+        print('-----')
+        print(i)
+        key, value = i.split(':')
+        print(_strip(key))
+        print(_strip(value))
+        result[_strip(key)] = _strip(value)
+    return result
+    print(result)
+    exit()
+
 #------------------------------------------------------------------------------
 # Main - @mark
 #------------------------------------------------------------------------------
@@ -343,14 +374,15 @@ if __name__ == "__main__":
         modname = di['modname']
         prefix = di['prefix']
         filepath = di['file']
-        parameter = di['parameter'].strip()
-        if len(parameter)>0:
-            try:
-                parameter = parameter.replace(chr(8220), '"')   # for ooffice
-                parameter = parameter.replace(chr(8221), '"')   # for ooffice
-                param = eval(parameter)
-            except:
-                assert(0), '[ERROR] parameter do not supported = '+parameter
+        #param = get_param(di['parameter'])
+        if len(di['parameter'])>0:
+            param = get_param(di['parameter'])
+            # try:
+            #     parameter = parameter.replace(chr(8220), '"')   # for ooffice
+            #     parameter = parameter.replace(chr(8221), '"')   # for ooffice
+            #     param = eval(parameter)
+            # except:
+            #     assert(0), '[ERROR] parameter do not supported = '+parameter
         else:
             param = {}
 
