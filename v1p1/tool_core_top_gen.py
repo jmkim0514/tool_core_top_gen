@@ -313,16 +313,14 @@ def get_param(param_i):
     param = param_i.replace(' ', '')
     param = param.replace('{', '')
     param = param.replace('}', '')
-    param = param.replace(chr(8220), '')   # for ooffice
-    param = param.replace(chr(8221), '')   # for ooffice
+    param = param.replace(chr(8220), '')    # for ooffice
+    param = param.replace(chr(8221), '')    # for ooffice
+    param = param.replace(chr(8216), "'")   # for ooffice
+    param = param.replace(chr(8217), "'")   # for ooffice
     print(param)
     result = {}
     for i in param.split(','):
-        print('-----')
-        print(i)
         key, value = i.split(':')
-        print(_strip(key))
-        print(_strip(value))
         result[_strip(key)] = _strip(value)
     return result
     print(result)
