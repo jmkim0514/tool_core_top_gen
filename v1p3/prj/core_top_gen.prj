@@ -1,0 +1,23 @@
+{
+    "alp_tools": {
+        "name": "tool_core_top_gen",
+        "format": "prj",
+        "version": "v1p3"
+    },
+
+
+    "input" : {
+        //"core_top" : "../tpag_gen/output/mvp/core_top.v"
+        "core_top" : "./input/core_top.v"
+    },
+    "output" : {
+        "core_top": "./output/core_top.v"
+    },
+
+    "cpu_interrupt" : {
+        "input_excel" : "./input/mvp_cpu_interrupt.xlsx",
+        "output_rtl" : "./output/cpu_interrupt.v",
+        "irq_num" : 272
+    },
+    "connection" : "./input/mvp_core_top_connection.xlsx"
+}   
